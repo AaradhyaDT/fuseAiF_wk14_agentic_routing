@@ -1,0 +1,6 @@
+# save the file above to WK14\.gitattributes, then:
+git add .gitattributes
+git commit -m "chore: normalize line endings to LF, disable diff on .ipynb"
+git push
+git add --renormalize .
+git status
