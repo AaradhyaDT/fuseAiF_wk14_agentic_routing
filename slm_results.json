@@ -1,0 +1,44 @@
+{
+  "Qwen/Qwen2.5-0.5B-Instruct": {
+    "test_metrics": {
+      "precision": null,
+      "recall": null,
+      "macro_f1": 0.9989,
+      "accuracy": 0.9993,
+      "unparseable_count": 0,
+      "unparseable_rate": 0.0
+    },
+    "peak_mem_mb": 525.0,
+    "latency": {
+      "mean_ms": 172.47,
+      "std_ms": null,
+      "p50_ms": null,
+      "p95_ms": null
+    },
+    "history": {
+      "train_loss": [0.1508, 0.0019],
+      "val_loss": [0.0025, 0.0002]
+    }
+  },
+  "Qwen/Qwen2.5-1.5B-Instruct": {
+    "test_metrics": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "macro_f1": 1.0,
+      "accuracy": 1.0,
+      "unparseable_count": 0,
+      "unparseable_rate": 0.0
+    },
+    "peak_mem_mb": 1281.0,
+    "latency": {
+      "mean_ms": 234.65,
+      "std_ms": null,
+      "p50_ms": null,
+      "p95_ms": null
+    },
+    "history": {
+      "train_loss": [0.2071, 0.0005],
+      "val_loss": [0.001, 0.0001]
+    }
+  }
+}
