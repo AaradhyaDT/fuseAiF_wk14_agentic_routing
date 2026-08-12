@@ -35,11 +35,19 @@ All four metrics (precision, recall, macro-F1, accuracy) plus GPU memory and inf
 
 Best by test macro-F1: **distilbert-base-uncased**.
 
-**Approach 2 (SLMs): blocked.** Both Qwen models train cleanly through all epochs, but `train_slm`'s best-checkpoint reload crashes on `model.load_state_dict()` — the `"lora" in k` substring filter used to extract adapter weights also pulls in bitsandbytes' 4-bit quant buffers (`.absmax`, `.quant_map`, `.nested_absmax`, `.nested_quant_map`, `.quant_state.bitsandbytes__nf4`), which the strict reload then rejects as unexpected keys. Fix: replace the substring-filtered dict with PEFT's `get_peft_model_state_dict`/`set_peft_model_state_dict`, which extract adapter tensors by PEFT's own bookkeeping instead of key-name matching.
+**Approach 2 (SLMs): complete.** `train_slm`'s best-checkpoint reload previously crashed on `model.load_state_dict()` — the `"lora" in k` substring filter used to extract adapter weights also pulled in bitsandbytes' 4-bit quant buffers (`.absmax`, `.quant_map`, `.nested_absmax`, `.nested_quant_map`, `.quant_state.bitsandbytes__nf4`), which the strict reload then rejected as unexpected keys. Fixed by replacing the substring-filtered dict with PEFT's `get_peft_model_state_dict`/`set_peft_model_state_dict`, which extract adapter tensors by PEFT's own bookkeeping instead of key-name matching.
 
-Cells 27 onward (SLM eval, comparison table, comparison plot, recommendation, best-SLM selection) have not executed against real SLM results yet.
+| Model | Macro-F1 | Accuracy | Peak Mem | Latency | Unparseable |
+|---|---|---|---|---|---|
+| Qwen2.5-1.5B-Instruct | 1.0000 | 1.0000 | 1281MB | 234.65ms | 0.0% |
+| Qwen2.5-0.5B-Instruct | 0.9989 | 0.9993 | 525MB | 172.47ms | 0.0% |
 
-**Submission requirement not yet met:** notebook must run top-to-bottom without errors on a fresh kernel. Currently fails at the SLM training loop.
+Best overall by test macro-F1: **distilbert-base-uncased** (encoder) — ties Qwen2.5-1.5B-Instruct at 1.0000 macro-F1 while running ~54x faster (4.31ms vs 234.65ms) and using ~2.2x less peak memory (580MB vs 1281MB). Sections 4 (comparison), 5 (recommendation), and 6 (reflection) have all executed against these results.
+
+**Known gaps, not yet resolved:**
+- The valid-preds-only classification report for the best SLM (final cell of §3.2) is unexecuted — it needs the raw `preds`/`labels` arrays from the original training run, which only existed in that Colab kernel's memory and weren't persisted to `slm_results.json`. `split/support_routing_partB_slms_v2.ipynb` now saves these going forward, so a fresh run won't hit this.
+- `slm_results.json`'s `precision`/`recall`/`p50_ms`/`p95_ms` fields are `null` for the same reason (never printed, not recoverable after the fact).
+- **Submission requirement not fully verified:** the notebook must run top-to-bottom without errors on a fresh kernel. The current committed notebook reflects merged Colab split-run history rather than one continuous fresh execution, so this hasn't been re-confirmed end-to-end.
 
 ## Setup
 
